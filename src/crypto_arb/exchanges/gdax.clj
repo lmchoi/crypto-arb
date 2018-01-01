@@ -4,6 +4,7 @@
 
 (def exchange-id :gdax)
 (def exchange-url "wss://ws-feed.gdax.com")
+(def exchange-fees {:per-txn 0.003})
 
 (def default-ticker-request
   {:type "subscribe",
@@ -24,11 +25,12 @@
    :ex    exchange-id})
 
 (def exchange
-  {:id                exchange-id
-   :url               exchange-url
-   :ticker-request-fn create-ticker-request
+  {:id                  exchange-id
+   :url                 exchange-url
+   :ticker-request-fn   create-ticker-request
    :ticker-response?-fn ticker-response?
-   :parse-ticker-msg-fn parse-ticker-msg})
+   :parse-ticker-msg-fn parse-ticker-msg
+   :fees                exchange-fees})
 
 ; TODO
 ; 1. check for errors

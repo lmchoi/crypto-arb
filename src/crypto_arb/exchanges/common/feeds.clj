@@ -10,19 +10,18 @@
       (parse-ticker-msg-fn parsed-msg)
       (prn (name id) parsed-msg))))
 
-(defn connect [{:keys [url ticker-request-fn] :as exchange} ticker-stream]
+(defn connect [{:keys [url ticker-request-fn] :as exchange}]
   (let [conn @(http/websocket-client url)]
     ; sends request to exchange
     (s/put-all! conn
                 [(ticker-request-fn)])
     ; connect response stream to ticker stream
-    (s/connect (->> conn
-                    (s/map #(parse-msg % exchange))
-                    (s/filter (complement nil?)))
-               ticker-stream)))
+    (->> conn
+         (s/map #(parse-msg % exchange))
+         (s/filter (complement nil?)))))
 
 (defn ticker-feeds []
-  (let [ticker-stream (s/stream)]
-    (connect gdax/exchange ticker-stream)
-    (connect bitstamp/exchange ticker-stream)
-    (s/consume prn ticker-stream)))
+  (let [ticker-stream (s/stream)
+        gdax-stream (connect gdax/exchange)
+        bitstamp-stream (connect bitstamp/exchange)]
+    (s/zip gdax-stream bitstamp-stream)))

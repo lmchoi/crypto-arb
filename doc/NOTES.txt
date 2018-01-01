@@ -1,4 +1,6 @@
 ## gdax (related to coinbase)
+https://docs.gdax.com/#sandbox FOR TESTING
+
 https://docs.gdax.com/#websocket-feed
 
 https://support.gdax.com/customer/en/portal/articles/2430150-how-to-deposit-and-withdraw-digital-currencies
@@ -30,6 +32,7 @@ https://github.com/coinbase/gdax-tt
 Read more here: https://coinbase.github.io/gdax-tt/gtt_about.html
 
 ## bitstamp
+No fake server for testing??
 https://www.bitstamp.net/api/
 
 https://www.bitstamp.net/api/v2/ticker/xrpeur/
@@ -37,6 +40,15 @@ https://www.bitstamp.net/api/v2/ticker/xrpeur/
 Supported values for currency_pair: btcusd, btceur, eurusd, xrpusd, xrpeur, xrpbtc, ltcusd, ltceur, ltcbtc, ethusd, etheur, ethbtc, bchusd, bcheur, bchbtc
 
 https://www.bitstamp.net/fee_schedule/
+
+0.25% for all (less for higher volume)
+
+free to deposit/withdraw crypto
+Withdrawal using BitGo Instant 0.1%
+
+sepa
+Deposit 	Free of charge
+Withdrawal 	0.90 EUR
 
 ## Coin Floor
 https://github.com/coinfloor/api

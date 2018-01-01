@@ -4,6 +4,7 @@
 
 (def exchange-id :bitstamp)
 (def exchange-url "wss://ws.pusherapp.com:443/app/de504dc5763aeef9ff52?protocol=5")
+(def exchange-fees {:per-txn 0.0025})
 
 (def default-ticker-request
   {:event "pusher:subscribe"
@@ -28,7 +29,8 @@
    :url               exchange-url
    :ticker-request-fn create-ticker-request
    :ticker-response?-fn ticker-response?
-   :parse-ticker-msg-fn parse-ticker-msg})
+   :parse-ticker-msg-fn parse-ticker-msg
+   :fees              exchange-fees})
 
 ; NOTE: this is Pusher format: https://pusher.com/docs/pusher_protocol
 

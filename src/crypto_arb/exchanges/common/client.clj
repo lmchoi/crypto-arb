@@ -21,5 +21,3 @@
   (let [response @(http/get "https://bittrex.com/api/v1.1/public/getticker?market=USDT-BTC")
         body (parse-string (:body response) true)]
     (get-in body [:result :Bid])))
-
-
