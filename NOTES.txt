@@ -1,0 +1,48 @@
+## gdax (related to coinbase)
+https://docs.gdax.com/#websocket-feed
+
+https://support.gdax.com/customer/en/portal/articles/2430150-how-to-deposit-and-withdraw-digital-currencies
+Each digital currency, has its own average time interval between confirmations, and requires a certain number of confirmations before it is credited to your account balance:
+
+BTC: 3 confirmations (30 minutes on average)
+ETH: 50 confirmations (12 minutes on average)
+LTC: 6 confirmations (30 minutes on average)
+
+Withdrawal transactions will be generated instantly, and the value withdrawn from your account.
+
+https://support.gdax.com/customer/en/portal/articles/2425097-what-are-the-fees-on-gdax-?b_id=13522
+Deposits and Withdrawals
+Crypto Deposit: Free
+Crypto Withdrawal: Free
+
+ACH Deposit: Free
+ACH Withdrawal: Free
+
+SEPA Deposit: €0.15 EUR
+SEPA Withdrawal: €0.15 EUR
+
+USD Wire Deposit: $10 USD
+USD Wire Withdrawal: $25 USD
+
+
+### GDAX Trading toolkit - useful for creating automated bots on GDAX and others
+https://github.com/coinbase/gdax-tt
+Read more here: https://coinbase.github.io/gdax-tt/gtt_about.html
+
+## bitstamp
+https://www.bitstamp.net/api/
+
+https://www.bitstamp.net/api/v2/ticker/xrpeur/
+
+Supported values for currency_pair: btcusd, btceur, eurusd, xrpusd, xrpeur, xrpbtc, ltcusd, ltceur, ltcbtc, ethusd, etheur, ethbtc, bchusd, bcheur, bchbtc
+
+https://www.bitstamp.net/fee_schedule/
+
+## Coin Floor
+https://github.com/coinfloor/api
+
+NOTE: We process bitcoin withdrawals from our multi-signature cold storage vaults in batches up to 3 times a day during business hours. Please keep in mind that we do not process withdrawals from the vaults on weekends and public holidays.
+
+## Bit GO - consider using to speed up BTC transactions
+https://www.bitgo.com/solutions#wallet
+
