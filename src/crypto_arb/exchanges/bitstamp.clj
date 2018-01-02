@@ -6,31 +6,46 @@
 (def exchange-url "wss://ws.pusherapp.com:443/app/de504dc5763aeef9ff52?protocol=5")
 (def exchange-fees {:per-txn 0.0025})
 
+(def products-definition {"live_trades_btceur" :btc-eur
+                          "live_trades_etheur" :eth-eur
+                          "live_trades_xrpeur" :xrp-eur
+                          "live_trades_ethbtc" :eth-btc
+                          "live_trades_xrpbtc" :xrp-btc})
+
 (def default-ticker-request
   {:event "pusher:subscribe"
    :data {:channel "live_trades_btceur"
           :event "trade"}})
 
-(defn- create-ticker-request []
-  (cheshire.core/generate-string default-ticker-request))
+(defn- create-ticker-request [channel]
+  (-> default-ticker-request
+      (assoc-in [:data :channel] channel)
+      (cheshire.core/generate-string)))
 
 (defn- ticker-response? [{:keys [event]}]
   (= event "trade"))
 
-(defn- parse-price [{:keys [data]}]
-  (:price (cheshire.core/parse-string data true)))
+(defn- parse-price [data]
+  (:price data))
 
-(defn- parse-ticker-msg [msg]
-  {:price (parse-price msg)
-   :ex    exchange-id})
+(defn product-lookup [msg]
+  (get products-definition (:channel msg) :unknown))
+
+(defn- parse-ticker-msg [{:keys [data] :as msg}]
+  (let [parsed-data (cheshire.core/parse-string data true)]
+    {:price (parse-price parsed-data)
+     :ex    exchange-id
+     :pair  (product-lookup msg)}))
 
 (def exchange
-  {:id                exchange-id
-   :url               exchange-url
-   :ticker-request-fn create-ticker-request
+  {:id                  exchange-id
+   :url                 exchange-url
+   :ticker-request      [(create-ticker-request "live_trades_btceur")
+                         (create-ticker-request "live_trades_etheur")
+                         (create-ticker-request "live_trades_ethbtc")]
    :ticker-response?-fn ticker-response?
    :parse-ticker-msg-fn parse-ticker-msg
-   :fees              exchange-fees})
+   :fees                exchange-fees})
 
 ; NOTE: this is Pusher format: https://pusher.com/docs/pusher_protocol
 

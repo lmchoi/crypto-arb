@@ -6,9 +6,13 @@
 (def exchange-url "wss://ws-feed.gdax.com")
 (def exchange-fees {:per-txn 0.003})
 
+(def products-definition {"BTC-EUR" :btc-eur
+                          "ETH-EUR" :eth-eur
+                          "ETH-BTC" :eth-btc})
+
 (def default-ticker-request
   {:type "subscribe",
-   :product_ids ["BTC-EUR"],
+   :product_ids ["BTC-EUR" "ETH-EUR" "ETH-BTC"],
    :channels [{:name "ticker"}]})
 
 (defn- create-ticker-request []
@@ -20,14 +24,18 @@
 (defn- parse-price [msg]
   (read-string (:price msg)))
 
+(defn product-lookup [msg]
+  (get products-definition (:product_id msg) :unknown))
+
 (defn- parse-ticker-msg [msg]
   {:price (parse-price msg)
-   :ex    exchange-id})
+   :ex    exchange-id
+   :pair  (product-lookup msg)})
 
 (def exchange
   {:id                  exchange-id
    :url                 exchange-url
-   :ticker-request-fn   create-ticker-request
+   :ticker-request      [(create-ticker-request)]
    :ticker-response?-fn ticker-response?
    :parse-ticker-msg-fn parse-ticker-msg
    :fees                exchange-fees})

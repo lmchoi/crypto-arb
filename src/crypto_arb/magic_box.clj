@@ -17,11 +17,17 @@
         (with-buy-info cheapest)
         (with-sell-info most-expensive))))
 
-(defn pdr-pp [{:keys [pdr buy-price buy-at sell-price sell-at]}]
-  (let [formatted-str (str pdr " " buy-price "@" (name buy-at) " " sell-price "@" (name sell-at))]
+(defn pdr-pp [{:keys [pdr buy-price buy-at sell-price sell-at]} pair]
+  (let [formatted-str (str (name pair) " " pdr " " buy-price "@" (name buy-at) " " sell-price "@" (name sell-at))]
     (println formatted-str)
     formatted-str))
 
-(defn do-magic [ticker-stream]
-  (s/consume #(pdr-pp (calculate-pdr %))
-             ticker-stream))
+(defn handle-pair [{:keys [gdax-stream bitstamp-stream]} pair]
+  (s/consume #(pdr-pp (calculate-pdr %) pair)
+             (s/zip (s/filter #(= (:pair %) pair) gdax-stream)
+                    (s/filter #(= (:pair %) pair) bitstamp-stream))))
+
+(defn do-magic [ticker-streams]
+  (handle-pair ticker-streams :btc-eur)
+  (handle-pair ticker-streams :eth-eur)
+  (handle-pair ticker-streams :eth-btc))

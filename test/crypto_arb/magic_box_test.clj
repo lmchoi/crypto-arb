@@ -9,8 +9,8 @@
                :buy-at     :bitstamp
                :sell-price 1.05
                :sell-at    :gdax}
-          expected-result "1.05 1.0@bitstamp 1.05@gdax"]
-      (is (= (pdr-pp pdr) expected-result)))))
+          expected-result "btc-eur 1.05 1.0@bitstamp 1.05@gdax"]
+      (is (= (pdr-pp pdr :btc-eur) expected-result)))))
 
 (deftest test-calculate-pdr
   (testing "calculation of greatest price difference ratio given a ticker event"
