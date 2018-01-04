@@ -1,33 +1,51 @@
 (ns crypto-arb.magic-box
   (:require [manifold.stream :as s]))
 
-(defn- with-buy-info [pdr {:keys [price ex]}]
-  (-> pdr
-      (assoc :buy-price price)
-      (assoc :buy-at ex)))
-
-(defn- with-sell-info [pdr {:keys [price ex]}]
-  (-> pdr
-      (assoc :sell-price price)
-      (assoc :sell-at ex)))
-
-(defn calculate-pdr [ticker-event]
-  (let [[cheapest most-expensive] ((juxt first last) (sort-by :price ticker-event))]
-    (-> {:pdr (/ (:price most-expensive) (:price cheapest))}
-        (with-buy-info cheapest)
-        (with-sell-info most-expensive))))
-
-(defn pdr-pp [{:keys [pdr buy-price buy-at sell-price sell-at]} pair]
-  (let [formatted-str (str (name pair) " " pdr " " buy-price "@" (name buy-at) " " sell-price "@" (name sell-at))]
+(defn pp-pdr [{:keys [pdr low high]} pair]
+  (let [buy-price (:price low)
+        buy-at (:ex low)
+        sell-price (:price high)
+        sell-at (:ex high)
+        formatted-str (str (name pair) " " pdr " "
+                           buy-price "@" (name buy-at) " "
+                           sell-price "@" (name sell-at))]
     (println formatted-str)
     formatted-str))
 
-(defn handle-pair [{:keys [gdax-stream bitstamp-stream]} pair]
-  (s/consume #(pdr-pp (calculate-pdr %) pair)
-             (s/zip (s/filter #(= (:pair %) pair) gdax-stream)
-                    (s/filter #(= (:pair %) pair) bitstamp-stream))))
+(defn calculate-pdr [{:keys [low high] :as pair-state}]
+  (let [pdr (/ (:price high) (:price low))
+        updated-pair-state (assoc pair-state :pdr pdr)]
+    (pp-pdr updated-pair-state (:pair low))
+    updated-pair-state))
 
-(defn do-magic [ticker-streams]
-  (handle-pair ticker-streams :btc-eur)
-  (handle-pair ticker-streams :eth-eur)
-  (handle-pair ticker-streams :eth-btc))
+(defn new-low? [pair-state tick]
+  (> (get-in pair-state [:low :price]) (:price tick)))
+
+(defn new-high? [pair-state tick]
+  (< (get-in pair-state [:high :price] ) (:price tick)))
+
+(defn update-existing-pair [pair-state tick]
+  (cond
+    (nil? pair-state)
+    {:low tick :high tick}
+
+    (new-low? pair-state tick)
+    (-> pair-state
+        (assoc :low tick)
+        (calculate-pdr))
+
+    (new-high? pair-state tick)
+    (-> pair-state
+        (assoc :high tick)
+        (calculate-pdr))
+
+    :default
+    pair-state))
+
+(defn update-state [state {:keys [pair price] :as tick}]
+  (update state pair update-existing-pair tick))
+
+(defn do-magic [ticker-stream]
+  (s/reduce update-state
+            {}
+            ticker-stream))

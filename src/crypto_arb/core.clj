@@ -9,7 +9,7 @@
 (defn -main
   [& args]
   ; start streaming ticker events from exchange and do magic
-  (-> (ticker-feeds)
+  (-> (one-big-ticker-stream)
       (do-magic))
 
   ; cleanup
